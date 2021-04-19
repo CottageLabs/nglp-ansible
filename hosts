@@ -1,0 +1,8 @@
+all:
+  vars:
+    ansible_user: root
+    ansible_python_interpreter: /usr/bin/python3
+  children:
+    nglp-test:
+      hosts:
+        46.101.73.214: {}

@@ -1,0 +1,41 @@
+---
+- hosts: nglp-test
+  vars_files:
+    - vars.yml
+#    - vault.yml
+  tasks:
+    - name: Add Docker apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+    - name: Add Docker apt repo
+      apt_repository:
+        repo: 'deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
+        state: present
+        filename: docker
+        update_cache: no
+      register: docker_apt_repo
+
+    - name: Update apt if apt repo changed
+      command:
+        cmd: apt update
+      when: docker_apt_repo.changed
+
+    - apt:
+        pkg:
+          - docker-ce
+          - nginx
+          - certbot
+          - python3-docker
+          - python3-certbot-nginx
+
+    - file:
+        path: '{{ deploy_path }}'
+        state: directory
+
+    - template:
+        src: templates/docker-compose.yml
+        dest: '{{ deploy_path }}/docker-compose.yml'
+
+    - community.docker.docker_compose:
+        project_src: '{{ deploy_path }}'
