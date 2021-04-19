@@ -1,0 +1,84 @@
+version: '2.4'
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+    environment:
+      - node.name=es
+      - cluster.name=moose_es
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data:/usr/share/elasticsearch/data
+#      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+    healthcheck:
+      test: ["CMD", "curl","-s" ,"-f", "http://localhost:9200/_cat/health"]
+    restart: on-failure
+
+  kib:
+    image: docker.elastic.co/kibana/kibana:7.12.0
+    environment:
+      ELASTICSEARCH_URL: http://es:9200
+      ELASTICSEARCH_HOSTS: http://es:9200
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+    depends_on:
+      - es
+    volumes: []
+#      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:Z
+
+  graf:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    environment:
+      - TERM=linux
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel,natel-plotly-panel,https://github.com/chartwerk/grafana-chartwerk-app/archive/0.3.2.zip;corpglory-chartwerk-panel,https://github.com/gipong/grafana-groupedbarchart-panel/archive/master.zip;grafana-groupedbarchart-panel
+    volumes:
+      - graf-store:/var/lib/grafana
+    networks:
+      - elastic
+    depends_on:
+      - es
+
+  log:
+    image: docker.elastic.co/logstash/logstash:7.12.0
+    environment:
+      - NODE_NAME=es
+    ports:
+      - 9600:9600
+    networks:
+      - elastic
+    depends_on:
+      - es
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:12.0.4
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    ports:
+      - 8080:8080
+    networks:
+      - elastic
+
+volumes:
+  data:
+    driver: local
+  graf-store:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge

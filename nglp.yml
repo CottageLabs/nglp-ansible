@@ -24,6 +24,7 @@
     - apt:
         pkg:
           - docker-ce
+          - docker-compose
           - nginx
           - certbot
           - python3-docker
