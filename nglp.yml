@@ -1,5 +1,5 @@
 ---
-- hosts: nglp-test
+- hosts: nglp_test
   vars_files:
     - vars.yml
 #    - vault.yml
