@@ -1,0 +1,3 @@
+---
+sites_root: /srv/sites
+sites_log_root: /var/log/nginx/sites

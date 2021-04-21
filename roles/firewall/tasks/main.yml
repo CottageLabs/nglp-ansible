@@ -1,0 +1,15 @@
+- name: install firewalld
+  apt:
+    pkg:
+      - firewalld
+
+- name: permit traffic in default zone for various services service
+  ansible.posix.firewalld:
+    service: '{{ item }}'
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - http
+    - https
+    - ssh

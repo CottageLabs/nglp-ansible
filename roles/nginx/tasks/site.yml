@@ -1,0 +1,22 @@
+- name: create site log root for host
+  file:
+    path: '{{ sites_log_root }}/{{ site.name }}'
+    owner: www-data
+    mode: 0755
+    state: directory
+
+- name: Configure certbot
+  tags: certbot
+  command:
+    cmd: 'certbot certonly --nginx -d {{ site.name }} --agree-tos -m alex@cottagelabs.com -n'
+
+- name: nginx available site
+  template:
+    src: templates/site.nginx
+    dest: '/etc/nginx/sites-available/{{ site.name }}'
+
+- name: Enable site
+  file:
+    src: '/etc/nginx/sites-available/{{ site.name }}'
+    dest: '/etc/nginx/sites-enabled/{{ site.name }}'
+    state: link

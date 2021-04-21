@@ -1,8 +1,17 @@
 ---
 - hosts: nglp_test
+  vars:
+    root_domain: 'nglp-test.cottagelabs.com'
+    kibana_domain: 'kibana.{{ root_domain }}'
+    elasticsearch_domain: 'elasticsearch.{{ root_domain }}'
+    keycloak_domain: 'keycloak.{{ root_domain }}'
+    grafana_domain: 'grafana.{{ root_domain }}'
   vars_files:
     - vars.yml
 #    - vault.yml
+  roles:
+    - name: firewall
+    - name: nginx
   tasks:
     - name: Add Docker apt key
       apt_key:
@@ -25,10 +34,7 @@
         pkg:
           - docker-ce
           - docker-compose
-          - nginx
-          - certbot
           - python3-docker
-          - python3-certbot-nginx
 
     - file:
         path: '{{ deploy_path }}'

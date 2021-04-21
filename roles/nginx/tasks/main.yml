@@ -1,0 +1,48 @@
+---
+- name: install packages for nginx
+  apt:
+    pkg:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+
+- name: create directories
+  file:
+    path: '{{ item }}'
+    owner: www-data
+    mode: 0755
+    state: directory
+  loop:
+    - '{{ sites_root }}'
+    - '{{ sites_log_root }}'
+
+- name: set ssl_ciphers
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*)ssl_protocols\s'
+    backrefs: yes
+    line: '\1ssl_protocols TLSv1.2 TLSv1.3;'
+
+- include_tasks: site.yml
+  loop:
+    - name: '{{ kibana_domain }}'
+      reverse_proxy_port: 5061
+#    - name: '{{ elasticsearch_domain }}'
+#      reverse_proxy_port: 9200
+#    - name: '{{ grafana_domain }}'
+#      reverse_proxy_port: 3000
+    - name: '{{ keycloak_domain }}'
+      reverse_proxy_port: 8080
+  loop_control:
+    loop_var: site
+
+- name: Remove default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Enable nginx
+  systemd:
+    name: nginx
+    enabled: yes
+    state: reloaded
