@@ -1,0 +1,12 @@
+---
+- import_tasks: ca.yml
+
+- file:
+    path: '{{ deploy_path }}/ssl'
+    state: directory
+
+- include_tasks: key_and_cert.yml
+  loop: '{{ docker_services|dict2items }}'
+  loop_control:
+    loop_var: service
+  when: service.value.get('key_and_cert')

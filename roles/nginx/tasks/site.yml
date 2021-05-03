@@ -1,6 +1,9 @@
+- set_fact:
+    service_domain: '{{ service.key }}.{{ root_domain }}'
+
 - name: create site log root for host
   file:
-    path: '{{ sites_log_root }}/{{ site.name }}'
+    path: '{{ sites_log_root }}/{{ service_domain }}'
     owner: www-data
     mode: 0755
     state: directory
@@ -8,15 +11,15 @@
 - name: Configure certbot
   tags: certbot
   command:
-    cmd: 'certbot certonly --nginx -d {{ site.name }} --agree-tos -m alex@cottagelabs.com -n'
+    cmd: 'certbot certonly --nginx -d {{ service_domain }} --agree-tos -m alex@cottagelabs.com -n'
 
 - name: nginx available site
   template:
     src: templates/site.nginx
-    dest: '/etc/nginx/sites-available/{{ site.name }}'
+    dest: '/etc/nginx/sites-available/{{ service_domain }}'
 
 - name: Enable site
   file:
-    src: '/etc/nginx/sites-available/{{ site.name }}'
-    dest: '/etc/nginx/sites-enabled/{{ site.name }}'
+    src: '/etc/nginx/sites-available/{{ service_domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ service_domain }}'
     state: link

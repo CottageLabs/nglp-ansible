@@ -3,14 +3,17 @@
   vars:
     root_domain: 'nglp-test.cottagelabs.com'
     kibana_domain: 'kibana.{{ root_domain }}'
+    kibana_url: 'https://kibana.{{ root_domain }}/'
     elasticsearch_domain: 'elasticsearch.{{ root_domain }}'
     keycloak_domain: 'keycloak.{{ root_domain }}'
+    keycloak_url: 'https://keycloak.{{ root_domain }}/'
     grafana_domain: 'grafana.{{ root_domain }}'
   vars_files:
     - vars.yml
 #    - vault.yml
   roles:
     - name: firewall
+    - name: certificates
     - name: nginx
   tasks:
     - name: Add Docker apt key
@@ -36,13 +39,32 @@
           - docker-compose
           - python3-docker
 
+    - name: Ensure Docker is running and enabled
+      systemd:
+        name: docker
+        enabled: true
+        state: started
+
     - file:
-        path: '{{ deploy_path }}'
+        path: '{{ item }}'
         state: directory
+      loop:
+        - '{{ deploy_path }}'
+        - '{{ deploy_path }}/conf'
 
     - template:
-        src: templates/docker-compose.yml
-        dest: '{{ deploy_path }}/docker-compose.yml'
+        src: 'templates/{{ item }}'
+        dest: '{{ deploy_path }}/{{ item }}'
+      loop:
+        - docker-compose.yml
+        - conf/elasticsearch.yml
+        - conf/kibana.yml
+
 
     - community.docker.docker_compose:
         project_src: '{{ deploy_path }}'
+
+#    - community.docker.docker_container_exec:
+#        container: nglp_es_1
+#        command: bin/elasticsearch-keystore add -f xpack.security.authc.realms.oidc.oidc1.rp.client_secret
+#        stdin: very-secret

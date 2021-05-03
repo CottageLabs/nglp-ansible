@@ -1,0 +1,33 @@
+---
+- set_fact:
+    key_path: '{{ deploy_path }}/ssl/{{ service.key }}.pem'
+    csr_path: '{{ deploy_path }}/ssl/{{ service.key }}.csr'
+    cert_path: '{{ deploy_path }}/ssl/{{ service.key }}.crt'
+    common_name: '{{ service.value.common_name|default(service.key) }}'
+    key_owner: '{{ service.value.key_owner|default("1000") }}'
+
+- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  community.crypto.openssl_privatekey:
+    path: '{{ key_path }}'
+    format: pkcs8  # Required per https://stackoverflow.com/questions/6559272
+
+- name: Generate an OpenSSL Certificate Signing Request
+  community.crypto.openssl_csr:
+    path: '{{ csr_path }}'
+    privatekey_path: '{{ key_path }}'
+    common_name: '{{ common_name }}'  # this needs to match the service name in docker-compose.yml
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+
+- name: Generate an OpenSSL certificate signed with your own CA certificate
+  community.crypto.x509_certificate:
+    path: '{{ cert_path }}'
+    csr_path: '{{ csr_path }}'
+    ownca_path: '{{ ca_cert_path }}'
+    ownca_privatekey_path: '{{ ca_privkey_path }}'
+    provider: ownca
+
+- file:
+    path: '{{ key_path }}'
+    owner: '{{ key_owner }}'

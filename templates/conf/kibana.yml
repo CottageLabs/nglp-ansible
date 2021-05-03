@@ -1,0 +1,38 @@
+server.name: kibana
+server.host: "0"
+
+elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/root-ca.pem"]
+elasticsearch.ssl.verificationMode: full
+
+#opendistro_security.ssl.transport.pemcert_filepath: node.pem
+#opendistro_security.ssl.transport.pemkey_filepath: node-key.pem
+#opendistro_security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+#opendistro_security.ssl.http.enabled: true
+#opendistro_security.ssl.http.pemcert_filepath: node.pem
+#opendistro_security.ssl.http.pemkey_filepath: node-key.pem
+#opendistro_security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+
+# Enable OpenID authentication
+opendistro_security.auth.type: "openid"
+
+# The IdP metadata endpoint
+opendistro_security.openid.connect_url: "{{ keycloak_url }}auth/realms/master/.well-known/openid-configuration"
+
+# The ID of the OpenID Connect client in your IdP
+opendistro_security.openid.client_id: "{{ kibana_domain }}"
+
+# The client secret of the OpenID Connect client
+opendistro_security.openid.client_secret: "a59c51f5-f052-4740-a3b0-e14ba355b520"
+
+# Use HTTPS instead of HTTP
+#elasticsearch.url: "http://es:9200"
+
+## Configure the Kibana internal server user
+#elasticsearch.username: "kibanaserver"
+#elasticsearch.password: "kibanaserver"
+
+# Disable SSL verification when using self-signed demo certificates
+#elasticsearch.ssl.verificationMode: none
+
+# Whitelist basic headers and multi-tenancy header
+elasticsearch.requestHeadersWhitelist: ["Authorization", "security_tenant"]

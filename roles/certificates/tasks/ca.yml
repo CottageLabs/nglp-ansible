@@ -1,0 +1,23 @@
+
+- name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+  community.crypto.openssl_privatekey:
+    path: '{{ ca_privkey_path }}'
+
+- name: Generate an OpenSSL Certificate Signing Request
+  community.crypto.openssl_csr:
+    path: '{{ ca_csr_path }}'
+    privatekey_path: '{{ ca_privkey_path }}'
+    common_name: ca
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    key_usage:
+      - keyCertSign
+
+- name: Generate an OpenSSL certificate signed with your own CA certificate
+  community.crypto.x509_certificate:
+    path: '{{ ca_cert_path }}'
+    csr_path: '{{ ca_csr_path }}'
+    privatekey_path: '{{ ca_privkey_path }}'
+    provider: selfsigned
+

@@ -1,2 +1,30 @@
 ---
 deploy_path: /srv/nglp
+
+ca_cert_path: /etc/ssl/certs/nglp.pem
+ca_privkey_path: /etc/ssl/private/nglp.pem
+ca_csr_path: /etc/ssl/certs/nglp.csr
+
+docker_services:
+  elasticsearch:
+    port: 9200
+    scheme: https
+    key_and_cert: yes
+    expose: no
+  kibana:
+    port: 5601
+    scheme: http
+    key_and_cert: yes
+    expose: yes
+  keycloak:
+    port: 8080
+    scheme: http
+    expose: yes
+  logstash:
+    port: 9600
+    scheme: http
+    expose: yes
+  grafana:
+    port: 3000
+    scheme: http
+    expose: yes

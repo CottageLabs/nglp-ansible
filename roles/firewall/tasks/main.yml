@@ -3,6 +3,12 @@
     pkg:
       - firewalld
 
+- name: Ensure firewalld is running and enabled
+  systemd:
+    name: firewalld
+    enabled: true
+    state: started
+
 - name: permit traffic in default zone for various services service
   ansible.posix.firewalld:
     service: '{{ item }}'
