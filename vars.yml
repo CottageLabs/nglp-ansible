@@ -1,9 +1,8 @@
 ---
-deploy_path: /srv/nglp
 
-ca_cert_path: /etc/ssl/certs/nglp.pem
-ca_privkey_path: /etc/ssl/private/nglp.pem
-ca_csr_path: /etc/ssl/certs/nglp.csr
+ca_cert_path: '{{ ssl_path }}/certs/nglp.pem'
+ca_privkey_path: '{{ ssl_path }}/private/nglp.pem'
+ca_csr_path: '{{ ssl_path }}/certs/nglp.csr'
 
 docker_services:
   elasticsearch:

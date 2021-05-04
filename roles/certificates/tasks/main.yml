@@ -1,4 +1,14 @@
 ---
+
+- file:
+    path: '{{ item }}'
+    state: directory
+  loop:
+    - '{{ deploy_path }}/ssl'
+    - '{{ ssl_path }}'
+    - '{{ ssl_path }}/certs'
+    - '{{ ssl_path }}/private'
+
 - import_tasks: ca.yml
 
 - file:
@@ -10,3 +20,9 @@
   loop_control:
     loop_var: service
   when: service.value.get('key_and_cert')
+
+- include_tasks: key_and_cert.yml
+  vars:
+    service:
+      key: admin
+      value:

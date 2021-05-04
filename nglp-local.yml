@@ -1,9 +1,13 @@
 ---
-- hosts: nglp_test
+- hosts: nglp_local
+  connection: local
+  gather_facts: false
   vars:
-    root_domain: 'nglp-test.cottagelabs.com'
-    ssl_path: '/etc/ssl'
-    ssl_path_relative_to_docker_compose: '/etc/ssl'
+
+    deploy_path: 'deploy'
+    root_domain: 'nglp-test.localhost'
+    ssl_path: 'deploy/ssl/ca'
+    ssl_path_relative_to_docker_compose: './ssl/ca'
     kibana_domain: 'kibana.{{ root_domain }}'
     kibana_url: 'https://kibana.{{ root_domain }}/'
     elasticsearch_domain: 'elasticsearch.{{ root_domain }}'
@@ -14,38 +18,8 @@
     - vars.yml
 #    - vault.yml
   roles:
-    - name: firewall
     - name: certificates
-    - name: nginx
   tasks:
-    - name: Add Docker apt key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-
-    - name: Add Docker apt repo
-      apt_repository:
-        repo: 'deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'
-        state: present
-        filename: docker
-        update_cache: no
-      register: docker_apt_repo
-
-    - name: Update apt if apt repo changed
-      command:
-        cmd: apt update
-      when: docker_apt_repo.changed
-
-    - apt:
-        pkg:
-          - docker-ce
-          - docker-compose
-          - python3-docker
-
-    - name: Ensure Docker is running and enabled
-      systemd:
-        name: docker
-        enabled: true
-        state: started
 
     - file:
         path: '{{ item }}'
@@ -61,7 +35,6 @@
         - docker-compose.yml
         - conf/elasticsearch.yml
         - conf/kibana.yml
-
 
     - community.docker.docker_compose:
         project_src: '{{ deploy_path }}'

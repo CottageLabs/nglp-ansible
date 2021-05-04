@@ -6,3 +6,6 @@ all:
     nglp_test:
       hosts:
         46.101.73.214: {}
+    nglp_local:
+      hosts:
+        localhost: {}

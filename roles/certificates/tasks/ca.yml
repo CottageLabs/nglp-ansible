@@ -13,6 +13,9 @@
       - clientAuth
     key_usage:
       - keyCertSign
+    basic_constraints:
+      - "CA:TRUE"
+    basic_constraints_critical: yes
 
 - name: Generate an OpenSSL certificate signed with your own CA certificate
   community.crypto.x509_certificate:
