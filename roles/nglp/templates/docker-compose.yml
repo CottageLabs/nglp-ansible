@@ -16,12 +16,7 @@ services:
         hard: -1
     volumes:
       - data:/usr/share/elasticsearch/data
-      - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:Z
-      - {{ ssl_path_relative_to_docker_compose }}/certs/nglp.pem:/usr/share/elasticsearch/config/root-ca.pem:Z
-      - ./ssl/elasticsearch.pem:/usr/share/elasticsearch/config/esnode-key.pem:Z
-      - ./ssl/elasticsearch.crt:/usr/share/elasticsearch/config/esnode.pem:Z
-      - ./ssl/admin.pem:/usr/share/elasticsearch/config/admin-key.pem:Z
-      - ./ssl/admin.crt:/usr/share/elasticsearch/config/admin.pem:Z
+      - ./elasticsearch/:/usr/share/elasticsearch/config/:Z
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -31,23 +26,32 @@ services:
       test: ["CMD", "curl","-s" ,"-f", "https://elasticsearch:9200/_cat/health", "--cacert", "{{ ssl_path_relative_to_docker_compose }}/certs/nglp.pem"]
     restart: on-failure
 
-#  kibana:
-#    image: amazon/opendistro-for-elasticsearch-kibana:1.13.2
-#    environment:
-#      ELASTICSEARCH_URL: https://elasticsearch:9200
-#      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
-#    ports:
-#      - 5601:5601
-#    networks:
-#      - elastic
-#    depends_on:
-#      - elasticsearch
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:1.13.2
+    environment:
+      ELASTICSEARCH_URL: https://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+    depends_on:
+      - elasticsearch
 #      - keycloak
-#    volumes:
-#      - ./conf/kibana.yml:/usr/share/kibana/config/kibana.yml:Z
-#      - {{ ssl_path_relative_to_docker_compose }}/certs/nglp.pem:/usr/share/kibana/config/root-ca.pem:Z
-#      - ./ssl/kibana.pem:/usr/share/elasticsearch/config/node-key.pem:Z
-#      - ./ssl/kibana.crt:/usr/share/elasticsearch/config/node.pem:Z
+    volumes:
+      - ./kibana/:/usr/share/kibana/config/:Z
+
+{% if false and local_deploy %}
+  nginx:
+    image: nginx
+    ports:
+      - 8000:80
+    networks:
+      - elastic
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/:Z
+{% endif %}
+
 #
 #  grafana:
 #    image: grafana/grafana
@@ -74,17 +78,19 @@ services:
 #    depends_on:
 #      - elasticsearch
 #
-#  keycloak:
-#    image: quay.io/keycloak/keycloak:12.0.4
-#    environment:
-#      - KEYCLOAK_USER=admin
-#      - KEYCLOAK_PASSWORD=admin
-#    ports:
-#      - 8080:8080
-#    networks:
-#      - elastic
-#    healthcheck:
-#      test: ["CMD", "curl", "-s" , "-f", "http://localhost:8080/auth/realms/master/.well-known/openid-configuration"]
+  keycloak:
+    image: quay.io/keycloak/keycloak:12.0.4
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD={{ keycloak_admin_password }}
+      - KEYCLOAK_FRONTEND_URL={{ keycloak_frontend_url }}
+      - KEYCLOAK_LOGLEVEL=DEBUG
+    ports:
+      - 8080:8080
+    networks:
+      - elastic
+    healthcheck:
+      test: ["CMD", "curl", "-s" , "-f", "http://localhost:8080/auth/realms/master/.well-known/openid-configuration"]
 
 volumes:
   data:

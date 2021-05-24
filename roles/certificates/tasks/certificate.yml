@@ -1,10 +1,9 @@
 ---
 - set_fact:
-    key_path: '{{ deploy_path }}/ssl/{{ service.key }}.pem'
-    csr_path: '{{ deploy_path }}/ssl/{{ service.key }}.csr'
-    cert_path: '{{ deploy_path }}/ssl/{{ service.key }}.crt'
-    common_name: '{{ service.value.common_name|default(service.key) }}'
-    key_owner: '{{ service.value.key_owner|default("1000") }}'
+    key_path: '{{ deploy_path }}/certs/{{ certificate.key }}-key.pem'
+    csr_path: '{{ deploy_path }}/certs/{{ certificate.key }}.csr'
+    cert_path: '{{ deploy_path }}/certs/{{ certificate.key }}.pem'
+    common_name: '{{ certificate.value.common_name|default(certificate.key) }}'
 
 - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
   community.crypto.openssl_privatekey:
@@ -27,7 +26,3 @@
     ownca_path: '{{ ca_cert_path }}'
     ownca_privatekey_path: '{{ ca_privkey_path }}'
     provider: ownca
-
-- file:
-    path: '{{ key_path }}'
-    owner: '{{ key_owner }}'

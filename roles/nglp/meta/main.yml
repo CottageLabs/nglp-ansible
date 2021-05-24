@@ -1,0 +1,7 @@
+---
+dependencies:
+  - role: firewall
+    when: not local_deploy
+  - role: certificates
+  - role: nginx
+    when: not local_deploy

@@ -3,43 +3,17 @@
   connection: local
   gather_facts: false
   vars:
+    local_deploy: yes
 
     deploy_path: 'deploy'
     root_domain: 'nglp-test.localhost'
-    ssl_path: 'deploy/ssl/ca'
     ssl_path_relative_to_docker_compose: './ssl/ca'
-    kibana_domain: 'kibana.{{ root_domain }}'
-    kibana_url: 'https://kibana.{{ root_domain }}/'
-    elasticsearch_domain: 'elasticsearch.{{ root_domain }}'
-    keycloak_domain: 'keycloak.{{ root_domain }}'
-    keycloak_url: 'https://keycloak.{{ root_domain }}/'
-    grafana_domain: 'grafana.{{ root_domain }}'
+
+    kibana_frontend_url: 'http://localhost:5601/'
+    kibana_internal_url: 'http://kibana:5601/'
+    keycloak_frontend_url: 'http://localhost:8080/auth'
+    keycloak_internal_url: 'http://keycloak:8080/auth'
   vars_files:
     - vars.yml
-#    - vault.yml
   roles:
-    - name: certificates
-  tasks:
-
-    - file:
-        path: '{{ item }}'
-        state: directory
-      loop:
-        - '{{ deploy_path }}'
-        - '{{ deploy_path }}/conf'
-
-    - template:
-        src: 'templates/{{ item }}'
-        dest: '{{ deploy_path }}/{{ item }}'
-      loop:
-        - docker-compose.yml
-        - conf/elasticsearch.yml
-        - conf/kibana.yml
-
-    - community.docker.docker_compose:
-        project_src: '{{ deploy_path }}'
-
-#    - community.docker.docker_container_exec:
-#        container: nglp_es_1
-#        command: bin/elasticsearch-keystore add -f xpack.security.authc.realms.oidc.oidc1.rp.client_secret
-#        stdin: very-secret
+    - name: nglp

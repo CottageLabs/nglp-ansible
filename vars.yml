@@ -1,19 +1,23 @@
 ---
 
-ca_cert_path: '{{ ssl_path }}/certs/nglp.pem'
-ca_privkey_path: '{{ ssl_path }}/private/nglp.pem'
-ca_csr_path: '{{ ssl_path }}/certs/nglp.csr'
+ca_cert_path: '{{ deploy_path }}/certs/root-ca.pem'
+ca_privkey_path: '{{ deploy_path }}/certs/root-ca-key.pem'
+ca_csr_path: '{{ deploy_path }}/certs/root-ca.csr'
+
+certificates:
+  elasticsearch:
+  kibana:
+  keycloak:
+  admin:
 
 docker_services:
   elasticsearch:
     port: 9200
     scheme: https
-    key_and_cert: yes
     expose: no
   kibana:
     port: 5601
     scheme: http
-    key_and_cert: yes
     expose: yes
   keycloak:
     port: 8080

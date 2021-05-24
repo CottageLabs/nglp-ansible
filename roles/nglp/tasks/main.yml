@@ -1,0 +1,116 @@
+---
+- file:
+    path: '{{ item }}'
+    state: directory
+  loop:
+    - '{{ deploy_path }}'
+    - '{{ deploy_path }}/elasticsearch'
+    - '{{ deploy_path }}/kibana'
+
+- set_fact:
+     keycloak_admin_password: "{{ lookup('password', deploy_path + '/keycloak-admin-password') }}"
+     kibana_oidc_client_secret: "{{ lookup('password', deploy_path + '/kibana-oidc-client-secret') }}"
+     kibana_oidc_client_id: "kibana.{{ root_domain }}"
+
+- template:
+    src: 'templates/{{ item.src|default(item) }}'
+    dest: '{{ deploy_path }}/{{ item.dest|default(item) }}'
+  loop:
+    - docker-compose.yml
+    - elasticsearch/elasticsearch.yml
+    - kibana/kibana.yml
+    - src: common/jvm.options
+      dest: elasticsearch/jvm.options
+    - src: common/jvm.options
+      dest: kibana/jvm.options
+    - src: common/log4j2.properties
+      dest: elasticsearch/log4j2.properties
+    - src: common/log4j2.properties
+      dest: kibana/log4j2.properties
+
+- name: Place certificate files in the right places
+  copy:
+    remote_src: yes
+    src: '{{ deploy_path }}/{{ item.src }}'
+    dest: '{{ deploy_path }}/{{ item.dest }}'
+  loop:
+    # ElasticSearch
+    - src: certs/root-ca.pem
+      dest: elasticsearch/root-ca.pem
+    - src: certs/elasticsearch.pem
+      dest: elasticsearch/esnode.pem
+    - src: certs/elasticsearch-key.pem
+      dest: elasticsearch/esnode-key.pem
+    - src: certs/admin.pem
+      dest: elasticsearch/admin.pem
+    - src: certs/admin-key.pem
+      dest: elasticsearch/admin-key.pem
+    # Kibana
+    - src: certs/root-ca.pem
+      dest: kibana/root-ca.pem
+    - src: certs/kibana.pem
+      dest: kibana/esnode.pem
+    - src: certs/kibana-key.pem
+      dest: elasticsearch/kibana-key.pem
+
+
+- name: Local deployment should have a Dockerized nginx
+  when: local_deploy
+  block:
+  - file:
+      path: '{{ deploy_path }}/nginx'
+      state: directory
+
+  - template:
+      src: nginx/local.nginx
+      dest: '{{ deploy_path }}/nginx/sites.conf'
+
+
+
+- name: Set owner permissions for directories to be make available to Docker containers
+  file:
+    path: '{{ item }}'
+    owner: '1000'
+    recurse: yes
+  loop:
+    - '{{ deploy_path }}/elasticsearch'
+    - '{{ deploy_path }}/kibana'
+
+- community.docker.docker_compose:
+    project_src: '{{ deploy_path }}'
+
+- name: Configure OpenID Connect client for Kibana
+  # Retry this because on the first run we have to wait for the KeyCloak instance to come up.
+  retries: 10
+  delay: 10
+  register: result
+  until: result.rc == 0
+  # And now the command
+  shell:
+    chdir: '{{ deploy_path }}'
+    cmd: |
+      docker-compose exec -T keycloak \
+        /opt/jboss/keycloak/bin/kcadm.sh config credentials \
+          --server '{{ keycloak_internal_url }}' \
+          --realm master \
+          --user admin \
+          --password "$(cat keycloak-admin-password)"
+
+      KIBANA_CLIENT_ID=$(
+        docker-compose exec -T keycloak \
+          /opt/jboss/keycloak/bin/kcadm.sh get clients | \
+        jq '.[] | select(.clientId == "{{ kibana_oidc_client_id }}").id' -r \
+      )
+
+      if [ "$KIBANA_CLIENT_ID" == "" ] ; then
+        CMD="create clients"
+      else
+        CMD="update clients/$KIBANA_CLIENT_ID"
+      fi
+
+      docker-compose exec -T keycloak \
+        /opt/jboss/keycloak/bin/kcadm.sh $CMD \
+          -s clientId={{ kibana_oidc_client_id }} \
+          -s publicClient=false \
+          -s 'redirectUris=["{{ kibana_frontend_url }}*"]' \
+          -s 'secret={{ kibana_oidc_client_secret }}'
