@@ -5,6 +5,7 @@
   loop:
     - '{{ deploy_path }}'
     - '{{ deploy_path }}/elasticsearch'
+    - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
 
 - set_fact:
@@ -18,6 +19,7 @@
   loop:
     - docker-compose.yml
     - elasticsearch/elasticsearch.yml
+    - elasticsearch/plugins/opendistro_security/securityconfig/config.yml
     - kibana/kibana.yml
     - src: common/jvm.options
       dest: elasticsearch/jvm.options
