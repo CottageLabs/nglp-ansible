@@ -16,7 +16,9 @@ services:
         hard: -1
     volumes:
       - data:/usr/share/elasticsearch/data
-      - ./elasticsearch/:/usr/share/elasticsearch/config/:Z
+{% for volume_file in docker_services.elasticsearch.volume_files %}
+      - ./elasticsearch/{{ volume_file }}:/usr/share/elasticsearch/{{ volume_file }}:Z
+{% endfor %}
     ports:
       - "9200:9200"
       - "9300:9300"

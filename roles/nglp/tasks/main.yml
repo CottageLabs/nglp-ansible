@@ -5,6 +5,7 @@
   loop:
     - '{{ deploy_path }}'
     - '{{ deploy_path }}/elasticsearch'
+    - '{{ deploy_path }}/elasticsearch/config'
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
 
@@ -18,7 +19,7 @@
     dest: '{{ deploy_path }}/{{ item.dest|default(item) }}'
   loop:
     - docker-compose.yml
-    - elasticsearch/elasticsearch.yml
+    - elasticsearch/config/elasticsearch.yml
     - elasticsearch/plugins/opendistro_security/securityconfig/config.yml
     - kibana/kibana.yml
     - src: common/jvm.options
@@ -38,15 +39,15 @@
   loop:
     # ElasticSearch
     - src: certs/root-ca.pem
-      dest: elasticsearch/root-ca.pem
+      dest: elasticsearch/config/root-ca.pem
     - src: certs/elasticsearch.pem
-      dest: elasticsearch/esnode.pem
+      dest: elasticsearch/config/esnode.pem
     - src: certs/elasticsearch-key.pem
-      dest: elasticsearch/esnode-key.pem
+      dest: elasticsearch/config/esnode-key.pem
     - src: certs/admin.pem
-      dest: elasticsearch/admin.pem
+      dest: elasticsearch/config/admin.pem
     - src: certs/admin-key.pem
-      dest: elasticsearch/admin-key.pem
+      dest: elasticsearch/config/admin-key.pem
     # Kibana
     - src: certs/root-ca.pem
       dest: kibana/root-ca.pem

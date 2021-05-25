@@ -15,6 +15,14 @@ docker_services:
     port: 9200
     scheme: https
     expose: no
+    volume_files:
+      - config/elasticsearch.yml
+      - config/esnode.pem
+      - config/esnode-key.pem
+      - config/admin.pem
+      - config/admin-key.pem
+      - config/root-ca.pem
+      - plugins/opendistro_security/securityconfig/config.yml
   kibana:
     port: 5601
     scheme: http
