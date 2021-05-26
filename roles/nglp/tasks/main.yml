@@ -86,6 +86,25 @@
 - community.docker.docker_compose:
     project_src: '{{ deploy_path }}'
 
+- name: Run securityadmin.sh on ElasticSearch
+  # Retry this because on the first run we have to wait for the ElasticSearch instance to come up.
+  # https://opendistro.github.io/for-elasticsearch-docs/docs/security/configuration/security-admin/
+  retries: 10
+  delay: 10
+  register: result
+  until: result.rc == 0
+  # And now the command
+  shell:
+    chdir: '{{ deploy_path }}'
+    cmd: |
+      docker-compose exec -T elasticsearch \
+        bash /usr/share/elasticsearch/plugins/opendistro_security/tools/securityadmin.sh \
+          -icl -nhnv \
+          -cd /usr/share/elasticsearch/plugins/opendistro_security/securityconfig/ \
+          -cacert /usr/share/elasticsearch/config/root-ca.pem \
+          -cert /usr/share/elasticsearch/config/admin.pem \
+          -key /usr/share/elasticsearch/config/admin-key.pem
+
 - name: Configure OpenID Connect client for Kibana
   # Retry this because on the first run we have to wait for the KeyCloak instance to come up.
   retries: 10
