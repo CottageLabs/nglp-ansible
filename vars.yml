@@ -23,6 +23,7 @@ docker_services:
       - config/admin-key.pem
       - config/root-ca.pem
       - plugins/opendistro_security/securityconfig/config.yml
+      - plugins/opendistro_security/securityconfig/internal_users.yml
   kibana:
     port: 5601
     scheme: http

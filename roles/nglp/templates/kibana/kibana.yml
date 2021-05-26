@@ -24,7 +24,7 @@ elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/root-ca.pem
 elasticsearch.ssl.verificationMode: full
 
 elasticsearch.username: kibanaserver
-elasticsearch.password: kibanaserver
+elasticsearch.password: "{{ kibana_elasticsearch_password }}"
 elasticsearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
 
 opendistro_security.multitenancy.enabled: true

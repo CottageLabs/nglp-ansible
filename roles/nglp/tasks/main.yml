@@ -4,15 +4,18 @@
     state: directory
   loop:
     - '{{ deploy_path }}'
+    - '{{ deploy_path }}/secrets'
     - '{{ deploy_path }}/elasticsearch'
     - '{{ deploy_path }}/elasticsearch/config'
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
 
 - set_fact:
-     keycloak_admin_password: "{{ lookup('password', deploy_path + '/keycloak-admin-password') }}"
-     kibana_oidc_client_secret: "{{ lookup('password', deploy_path + '/kibana-oidc-client-secret') }}"
-     kibana_oidc_client_id: "kibana.{{ root_domain }}"
+    elasticsearch_admin_password: "{{ lookup('password', deploy_path + '/secrets/elasticsearch-admin-password') }}"
+    keycloak_admin_password: "{{ lookup('password', deploy_path + '/secrets/keycloak-admin-password') }}"
+    kibana_oidc_client_secret: "{{ lookup('password', deploy_path + '/secrets/kibana-oidc-client-secret') }}"
+    kibana_oidc_client_id: "kibana.{{ root_domain }}"
+    kibana_elasticsearch_password: "{{ lookup('password', deploy_path + '/secrets/kibana-elasticsearch-password') }}"
 
 - template:
     src: 'templates/{{ item.src|default(item) }}'
@@ -21,6 +24,7 @@
     - docker-compose.yml
     - elasticsearch/config/elasticsearch.yml
     - elasticsearch/plugins/opendistro_security/securityconfig/config.yml
+    - elasticsearch/plugins/opendistro_security/securityconfig/internal_users.yml
     - kibana/kibana.yml
     - src: common/jvm.options
       dest: elasticsearch/jvm.options
@@ -97,7 +101,7 @@
           --server '{{ keycloak_internal_url }}' \
           --realm master \
           --user admin \
-          --password "$(cat keycloak-admin-password)"
+          --password "$(cat secrets/keycloak-admin-password)"
 
       KIBANA_CLIENT_ID=$(
         docker-compose exec -T keycloak \
