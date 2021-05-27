@@ -3,12 +3,15 @@
   vars:
     local_deploy: no
 
+    deploy_path: '/srv/nglp'
     root_domain: 'nglp-test.cottagelabs.com'
     ssl_path: '/etc/ssl'
     ssl_path_relative_to_docker_compose: '/etc/ssl'
 
-    kibana_url: 'https://kibana.{{ root_domain }}/'
-    keycloak_url: 'https://keycloak.{{ root_domain }}/'
+    kibana_frontend_url: 'https://kibana.{{ root_domain }}/'
+    kibana_internal_url: 'http://kibana:5601/'
+    keycloak_frontend_url: 'https://keycloak.{{ root_domain }}/auth'
+    keycloak_internal_url: 'http://keycloak:8080/auth'
   vars_files:
     - vars.yml
   roles:

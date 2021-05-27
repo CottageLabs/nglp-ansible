@@ -1,21 +1,39 @@
 ---
+- name: install required system packages if not local
+  when: not local_deploy
+  apt:
+    pkg:
+      - jq
+      - python3-cryptography
+      - python3-passlib
+
 - file:
     path: '{{ item }}'
     state: directory
   loop:
     - '{{ deploy_path }}'
-    - '{{ deploy_path }}/secrets'
+    - '{{ secrets_path }}'
     - '{{ deploy_path }}/elasticsearch'
     - '{{ deploy_path }}/elasticsearch/config'
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
 
 - set_fact:
-    elasticsearch_admin_password: "{{ lookup('password', deploy_path + '/secrets/elasticsearch-admin-password') }}"
-    keycloak_admin_password: "{{ lookup('password', deploy_path + '/secrets/keycloak-admin-password') }}"
-    kibana_oidc_client_secret: "{{ lookup('password', deploy_path + '/secrets/kibana-oidc-client-secret') }}"
+#    elasticsearch_admin_password: "{{ lookup('password', deploy_path + '/secrets/elasticsearch-admin-password') }}"
+#    keycloak_admin_password: "{{ lookup('password', deploy_path + '/secrets/keycloak-admin-password') }}"
+#    kibana_oidc_client_secret: "{{ lookup('password', deploy_path + '/secrets/kibana-oidc-client-secret') }}"
     kibana_oidc_client_id: "kibana.{{ root_domain }}"
-    kibana_elasticsearch_password: "{{ lookup('password', deploy_path + '/secrets/kibana-elasticsearch-password') }}"
+#    kibana_elasticsearch_password: "{{ lookup('password', deploy_path + '/secrets/kibana-elasticsearch-password') }}"
+
+- name: Set secrets
+  include_tasks: secret.yml
+  loop_control:
+    loop_var: name
+  loop:
+    - elasticsearch_admin_password
+    - keycloak_admin_password
+    - kibana_oidc_client_secret
+    - kibana_elasticsearch_password
 
 - template:
     src: 'templates/{{ item.src|default(item) }}'
@@ -120,7 +138,7 @@
           --server '{{ keycloak_internal_url }}' \
           --realm master \
           --user admin \
-          --password "$(cat secrets/keycloak-admin-password)"
+          --password "$(cat secrets/keycloak_admin_password)"
 
       KIBANA_CLIENT_ID=$(
         docker-compose exec -T keycloak \

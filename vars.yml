@@ -4,6 +4,8 @@ ca_cert_path: '{{ deploy_path }}/certs/root-ca.pem'
 ca_privkey_path: '{{ deploy_path }}/certs/root-ca-key.pem'
 ca_csr_path: '{{ deploy_path }}/certs/root-ca.csr'
 
+secrets_path: '{{ deploy_path }}/secrets'
+
 certificates:
   elasticsearch:
   kibana:
