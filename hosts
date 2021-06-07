@@ -5,7 +5,7 @@ all:
   children:
     nglp_test:
       hosts:
-        46.101.73.214: {}
+        nglp-test.cottagelabs.com: {}
     nglp_local:
       hosts:
         localhost: {}
