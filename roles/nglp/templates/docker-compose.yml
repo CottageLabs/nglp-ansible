@@ -60,7 +60,7 @@ services:
     labels:
       autoheal: "true"
     healthcheck:
-      test: ["CMD", "curl", "-s" ,"-f", "http://kibana:5601/api/status"]
+      test: ["CMD", "curl", "-s" ,"-f", "http://kibana:5601/auth/openid/login"]
       interval: 15s
       timeout: 10s
       retries: 3
