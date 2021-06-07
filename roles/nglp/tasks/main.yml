@@ -33,6 +33,7 @@
     - elasticsearch_admin_password
     - elasticsearch_healthcheck_password
     - keycloak_admin_password
+    - keycloak_postgres_password
     - kibana_oidc_client_secret
     - kibana_elasticsearch_password
 

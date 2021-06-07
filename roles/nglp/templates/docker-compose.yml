@@ -59,18 +59,45 @@ services:
       start_period: 1m30s
     restart: on-failure
 
-{% if false and local_deploy %}
-  nginx:
-    image: nginx
+  keycloak:
+    image: quay.io/keycloak/keycloak:12.0.4
+    environment:
+      KEYCLOAK_USER: 'admin'
+      KEYCLOAK_PASSWORD: '{{ keycloak_admin_password }}'
+      KEYCLOAK_FRONTEND_URL: '{{ keycloak_frontend_url }}'
+      KEYCLOAK_LOGLEVEL: 'DEBUG'
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: '{{ keycloak_postgres_password }}'
     ports:
-      - 8000:80
+      - 8080:8080
+    networks:
+      - keycloak
+      - keycloak-postgres
+    depends_on:
+      - keycloak-postgres
+    healthcheck:
+      test: ["CMD", "curl", "-s" , "-f", "http://localhost:8080/auth/realms/master/.well-known/openid-configuration"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+
+  keycloak-postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: '{{ keycloak_postgres_password }}'
     networks:
       - elastic
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/:Z
-{% endif %}
+      - keycloak-postgres-data:/usr/share/elasticsearch/data
 
-#
+
 #  grafana:
 #    image: grafana/grafana
 #    ports:
@@ -96,22 +123,11 @@ services:
 #    depends_on:
 #      - elasticsearch
 #
-  keycloak:
-    image: quay.io/keycloak/keycloak:12.0.4
-    environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD={{ keycloak_admin_password }}
-      - KEYCLOAK_FRONTEND_URL={{ keycloak_frontend_url }}
-      - KEYCLOAK_LOGLEVEL=DEBUG
-    ports:
-      - 8080:8080
-    networks:
-      - elastic
-    healthcheck:
-      test: ["CMD", "curl", "-s" , "-f", "http://localhost:8080/auth/realms/master/.well-known/openid-configuration"]
 
 volumes:
   data:
+    driver: local
+  keycloak-postgres-data:
     driver: local
   graf-store:
     driver: local
@@ -119,3 +135,8 @@ volumes:
 networks:
   elastic:
     driver: bridge
+  keycloak:
+    driver: bridge
+  keycloak-postgres:
+    driver: bridge
+
