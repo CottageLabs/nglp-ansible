@@ -128,3 +128,8 @@ asynchronous_search_read_access:
   reserved: true
   cluster_permissions:
     - 'cluster:admin/opendistro/asynchronous_search/get'
+
+healthcheck:
+  reserved: true
+  cluster_permissions:
+    - 'cluster:monitor/health'

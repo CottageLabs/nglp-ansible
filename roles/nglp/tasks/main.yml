@@ -31,6 +31,7 @@
     loop_var: name
   loop:
     - elasticsearch_admin_password
+    - elasticsearch_healthcheck_password
     - keycloak_admin_password
     - kibana_oidc_client_secret
     - kibana_elasticsearch_password

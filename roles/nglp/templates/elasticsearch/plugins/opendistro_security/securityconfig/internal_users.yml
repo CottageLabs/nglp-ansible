@@ -21,3 +21,11 @@ kibanaserver:
   hash: "{{ kibana_elasticsearch_password|password_hash('bcrypt') }}"
   reserved: true
   description: "kibanaserver user"
+
+healthcheck:
+  hash: "{{ elasticsearch_healthcheck_password|password_hash('bcrypt') }}"
+  reserved: true
+  description: "orchestration healthcheck user"
+  opendistro_security_roles:
+    - "healthcheck"
+

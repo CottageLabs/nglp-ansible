@@ -25,7 +25,16 @@ services:
     networks:
       - elastic
     healthcheck:
-      test: ["CMD", "curl","-s" ,"-f", "https://elasticsearch:9200/_cat/health", "--cacert", "{{ ssl_path_relative_to_docker_compose }}/certs/nglp.pem"]
+      test: [
+          "CMD",
+          "curl", "-s" ,"-f", "https://elasticsearch:9200/_cat/health",
+          "--cacert", "/usr/share/elasticsearch/config/root-ca.pem",
+          "-u", "healthcheck:{{ elasticsearch_healthcheck_password }}",
+      ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
     restart: on-failure
 
   kibana:
@@ -42,6 +51,13 @@ services:
 #      - keycloak
     volumes:
       - ./kibana/:/usr/share/kibana/config/:Z
+    healthcheck:
+      test: ["CMD", "curl", "-s" ,"-f", "http://kibana:5601/api/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 1m30s
+    restart: on-failure
 
 {% if false and local_deploy %}
   nginx:
