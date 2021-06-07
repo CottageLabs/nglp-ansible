@@ -27,6 +27,8 @@ services:
       - keycloak
     depends_on:
       - keycloak
+    labels:
+      autoheal: "true"
     healthcheck:
       test: [
           "CMD",
@@ -55,6 +57,8 @@ services:
       - keycloak
     volumes:
       - ./kibana/:/usr/share/kibana/config/:Z
+    labels:
+      autoheal: "true"
     healthcheck:
       test: ["CMD", "curl", "-s" ,"-f", "http://kibana:5601/api/status"]
       interval: 15s
@@ -83,6 +87,8 @@ services:
       - keycloak-postgres
     depends_on:
       - keycloak-postgres
+    labels:
+      autoheal: "true"
     healthcheck:
       test: ["CMD", "curl", "-s" , "-f", "http://localhost:8080/auth/realms/master/.well-known/openid-configuration"]
       interval: 15s
@@ -101,6 +107,11 @@ services:
     volumes:
       - keycloak-postgres-data:/usr/share/elasticsearch/data
 
+  autoheal:
+    image: willfarrell/autoheal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
 
 #  grafana:
 #    image: grafana/grafana
