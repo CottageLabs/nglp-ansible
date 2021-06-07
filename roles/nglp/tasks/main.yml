@@ -2,10 +2,21 @@
 - name: install required system packages if not local
   when: not local_deploy
   apt:
+    update_cache: yes
     pkg:
       - jq
+      - docker
+      - docker-compose
       - python3-cryptography
+      - python3-docker
       - python3-passlib
+
+- name: ensure docker is running and enabled
+  when: not local_deploy
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
 
 - file:
     path: '{{ item }}'
