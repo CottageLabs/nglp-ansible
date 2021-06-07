@@ -160,7 +160,7 @@
         jq '.[] | select(.clientId == "{{ kibana_oidc_client_id }}").id' -r \
       )
 
-      if [ "$KIBANA_CLIENT_ID" == "" ] ; then
+      if test "$KIBANA_CLIENT_ID" = "" ; then
         CMD="create clients"
       else
         CMD="update clients/$KIBANA_CLIENT_ID"
