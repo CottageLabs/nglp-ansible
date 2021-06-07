@@ -15,7 +15,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
 {% for volume_file in docker_services.elasticsearch.volume_files %}
       - ./elasticsearch/{{ volume_file }}:/usr/share/elasticsearch/{{ volume_file }}:Z
 {% endfor %}
@@ -23,7 +23,10 @@ services:
       - "9200:9200"
       - "9300:9300"
     networks:
-      - elastic
+      - elasticsearch
+      - keycloak
+    depends_on:
+      - keycloak
     healthcheck:
       test: [
           "CMD",
@@ -45,10 +48,11 @@ services:
     ports:
       - 5601:5601
     networks:
-      - elastic
+      - elasticsearch
+      - keycloak
     depends_on:
       - elasticsearch
-#      - keycloak
+      - keycloak
     volumes:
       - ./kibana/:/usr/share/kibana/config/:Z
     healthcheck:
@@ -93,7 +97,7 @@ services:
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: '{{ keycloak_postgres_password }}'
     networks:
-      - elastic
+      - keycloak-postgres
     volumes:
       - keycloak-postgres-data:/usr/share/elasticsearch/data
 
@@ -125,7 +129,7 @@ services:
 #
 
 volumes:
-  data:
+  elasticsearch-data:
     driver: local
   keycloak-postgres-data:
     driver: local
@@ -133,7 +137,7 @@ volumes:
     driver: local
 
 networks:
-  elastic:
+  elasticsearch:
     driver: bridge
   keycloak:
     driver: bridge
