@@ -42,6 +42,6 @@ config:
           config:
             subject_key: preferred_username
             roles_key: roles
-            openid_connect_url: {{ keycloak_internal_url }}/realms/master/.well-known/openid-configuration
+            openid_connect_url: {{ keycloak_internal_url }}realms/master/.well-known/openid-configuration
         authentication_backend:
           type: noop

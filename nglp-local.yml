@@ -11,8 +11,8 @@
 
     kibana_frontend_url: 'http://localhost:5601/'
     kibana_internal_url: 'http://kibana:5601/'
-    keycloak_frontend_url: 'http://localhost:8080/auth'
-    keycloak_internal_url: 'http://keycloak:8080/auth'
+    keycloak_frontend_url: 'http://localhost:8080/auth/'
+    keycloak_internal_url: 'http://keycloak:8080/auth/'
   vars_files:
     - vars.yml
   roles:

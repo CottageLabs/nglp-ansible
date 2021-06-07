@@ -47,7 +47,7 @@ map.includeElasticMapsService: false
 opendistro_security.auth.type: "openid"
 
 # The IdP metadata endpoint
-opendistro_security.openid.connect_url: "{{ keycloak_internal_url }}/realms/master/.well-known/openid-configuration"
+opendistro_security.openid.connect_url: "{{ keycloak_internal_url }}realms/master/.well-known/openid-configuration"
 
 # The ID of the OpenID Connect client in your IdP
 opendistro_security.openid.client_id: "{{ kibana_oidc_client_id }}"
