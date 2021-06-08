@@ -27,7 +27,7 @@ server {
     client_max_body_size 10m;
 
     location / {
-        proxy_pass {{ service.value.scheme }}://127.0.0.1:{{ service.value.port }};
+        proxy_pass {{ service.value.scheme }}://localhost:{{ service.value.port }};
 {% if service.value.scheme == 'https' %}
         proxy_ssl_trusted_certificate {{ ca_cert_path }};
         proxy_ssl_verify on;

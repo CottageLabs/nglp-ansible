@@ -16,7 +16,7 @@ docker_services:
   elasticsearch:
     port: 9200
     scheme: https
-    expose: no
+    expose: yes
     volume_files:
       - config/elasticsearch.yml
       - config/esnode.pem

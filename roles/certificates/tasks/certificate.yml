@@ -18,6 +18,7 @@
     extended_key_usage:
       - serverAuth
       - clientAuth
+    subject_alt_name: DNS:localhost
 
 - name: Generate an OpenSSL certificate signed with your own CA certificate
   community.crypto.x509_certificate:
