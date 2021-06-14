@@ -18,7 +18,7 @@
     extended_key_usage:
       - serverAuth
       - clientAuth
-    subject_alt_name: DNS:localhost
+    subject_alt_name: 'DNS:{{ certificate.value.common_name|default(certificate.key) }},DNS:localhost'
 
 - name: Generate an OpenSSL certificate signed with your own CA certificate
   community.crypto.x509_certificate:
