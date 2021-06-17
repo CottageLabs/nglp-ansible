@@ -57,6 +57,7 @@
     - elasticsearch/plugins/opendistro_security/securityconfig/config.yml
     - elasticsearch/plugins/opendistro_security/securityconfig/internal_users.yml
     - elasticsearch/plugins/opendistro_security/securityconfig/roles.yml
+    - elasticsearch/plugins/opendistro_security/securityconfig/roles_mapping.yml
     - kibana/kibana.yml
     - src: common/jvm.options
       dest: elasticsearch/jvm.options
