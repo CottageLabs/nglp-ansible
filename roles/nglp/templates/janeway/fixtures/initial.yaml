@@ -1,0 +1,21 @@
+---
+- pk: 1
+  model: press.press
+  fields:
+    name: NGLP Press
+    domain: {{ janeway_domain }}
+    main_contact: contact@{{ janeway_domain }}
+    # The default theme has missing templates
+    theme: OLH
+
+- model: core.account
+  fields:
+    username: admin@janeway.invalid
+    # https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html#encrypting-and-checksumming-strings-and-passwords
+#    password: '{{ janeway_admin_password | password_hash("pbkdf2_sha512") | regex_replace("^\\$pbkdf2-sha512", "pbkdf2_sha512") }}'
+    email: admin@janeway.invalid
+    is_superuser: yes
+    is_staff: yes
+    is_active: yes
+    is_admin: yes
+    institution: Janeway
