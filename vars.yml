@@ -36,14 +36,14 @@ docker_services:
     port: 8080
     scheme: http
     expose: yes
-  logstash:
-    port: 9600
-    scheme: http
-    expose: yes
-  grafana:
-    port: 3000
-    scheme: http
-    expose: yes
+#  logstash:
+#    port: 9600
+#    scheme: http
+#    expose: yes
+#  grafana:
+#    port: 3000
+#    scheme: http
+#    expose: yes
   janeway:
     port: 8000
     scheme: http

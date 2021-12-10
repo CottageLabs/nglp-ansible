@@ -8,7 +8,7 @@ services:
       discovery.type: single-node
       bootstrap.memory_lock: "true"
       DISABLE_INSTALL_DEMO_CONFIG: "true"
-      ES_JAVA_OPTS: "-Xms1024m -Xmx1024m"
+      ES_JAVA_OPTS: "-Xms1024m -Xmx1024m -Dlog4j2.formatMsgNoLookups=true"
       network.host: 0.0.0.0 # required if not using the demo security configuration
     ulimits:
       memlock:
@@ -171,8 +171,8 @@ volumes:
     driver: local
   janeway-postgres-data:
     driver: local
-  graf-store:
-    driver: local
+#  graf-store:
+#    driver: local
 
 networks:
   elasticsearch:
