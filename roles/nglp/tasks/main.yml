@@ -28,8 +28,8 @@
     - '{{ deploy_path }}/elasticsearch/config'
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
-    - '{{ deploy_path }}/janeway'
-    - '{{ deploy_path }}/janeway/fixtures'
+#    - '{{ deploy_path }}/janeway'
+#    - '{{ deploy_path }}/janeway/fixtures'
 
 - set_fact:
 #    elasticsearch_admin_password: "{{ lookup('password', deploy_path + '/secrets/elasticsearch-admin-password') }}"
@@ -49,8 +49,8 @@
     - keycloak_postgres_password
     - kibana_oidc_client_secret
     - kibana_elasticsearch_password
-    - janeway_admin_password
-    - janeway_postgres_password
+#    - janeway_admin_password
+#    - janeway_postgres_password
 
 - template:
     src: 'templates/{{ item.src|default(item) }}'
@@ -72,7 +72,7 @@
     - src: common/log4j2.properties
       dest: kibana/log4j2.properties
     # Janeway
-    - janeway/fixtures/initial.yaml
+#    - janeway/fixtures/initial.yaml
 
 - name: Place certificate files in the right places
   copy:
