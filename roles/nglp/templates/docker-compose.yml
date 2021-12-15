@@ -107,29 +107,29 @@ services:
     volumes:
       - keycloak-postgres-data:/var/lib/postgresql/data
 
-
-  janeway:
-    build:
-      context: https://github.com/NGLPteam/nglp-janeway-docker.git#main
-    environment:
-      DATABASE_URL: postgres://janeway:{{ janeway_postgres_password }}@janeway-postgres/janeway
-    ports:
-      - 8000:8000
-    volumes:
-      - ./janeway/fixtures/:/srv/janeway/fixtures/:Z
-    networks:
-      - janeway-postgres
-
-  janeway-postgres:
-    image: postgres
-    environment:
-      POSTGRES_DB: janeway
-      POSTGRES_USER: janeway
-      POSTGRES_PASSWORD: '{{ janeway_postgres_password }}'
-    networks:
-      - janeway-postgres
-    volumes:
-      - janeway-postgres-data:/var/lib/postgresql/data
+#
+#  janeway:
+#    build:
+#      context: https://github.com/NGLPteam/nglp-janeway-docker.git#main
+#    environment:
+#      DATABASE_URL: postgres://janeway:{{ janeway_postgres_password }}@janeway-postgres/janeway
+#    ports:
+#      - 8000:8000
+#    volumes:
+#      - ./janeway/fixtures/:/srv/janeway/fixtures/:Z
+#    networks:
+#      - janeway-postgres
+#
+#  janeway-postgres:
+#    image: postgres
+#    environment:
+#      POSTGRES_DB: janeway
+#      POSTGRES_USER: janeway
+#      POSTGRES_PASSWORD: '{{ janeway_postgres_password }}'
+#    networks:
+#      - janeway-postgres
+#    volumes:
+#      - janeway-postgres-data:/var/lib/postgresql/data
 
 
   autoheal:
@@ -169,8 +169,8 @@ volumes:
     driver: local
   keycloak-postgres-data:
     driver: local
-  janeway-postgres-data:
-    driver: local
+#  janeway-postgres-data:
+#    driver: local
 #  graf-store:
 #    driver: local
 
@@ -181,6 +181,6 @@ networks:
     driver: bridge
   keycloak-postgres:
     driver: bridge
-  janeway-postgres:
-    driver: bridge
+#  janeway-postgres:
+#    driver: bridge
 

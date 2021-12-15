@@ -44,7 +44,7 @@ docker_services:
 #    port: 3000
 #    scheme: http
 #    expose: yes
-  janeway:
-    port: 8000
-    scheme: http
-    expose: yes
+#  janeway:
+#    port: 8000
+#    scheme: http
+#    expose: yes
