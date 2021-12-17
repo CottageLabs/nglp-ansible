@@ -1,0 +1,10 @@
+es_hosts=["https://admin:{{ elasticsearch_admin_password }}@{{ elasticsearch_frontend_url }}"]
+es_verify_certs=True
+es_index_namespace="nglp-analytics"
+
+# GeoLite City database for GeoIP
+geo_database=GeoLite2-City_20210817/GeoLite2-City.mmdb
+
+# Kafka Configuration
+kafka_broker="kafka://kafka:19092"
+precompute_wait_time=30

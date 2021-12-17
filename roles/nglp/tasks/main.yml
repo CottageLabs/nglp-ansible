@@ -28,6 +28,7 @@
     - '{{ deploy_path }}/elasticsearch/config'
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
+    - '{{ deploy_path }}/nglp-analytics'
 #    - '{{ deploy_path }}/janeway'
 #    - '{{ deploy_path }}/janeway/fixtures'
 
@@ -179,6 +180,37 @@
           -s publicClient=false \
           -s 'redirectUris=["{{ kibana_frontend_url }}*"]' \
           -s 'secret={{ kibana_oidc_client_secret }}'
+
+- name: Pull latest master from GitHub
+  git:
+    repo: https://github.com/NGLPteam/NGLP-Analytics.git
+    dest: '{{ deploy_path }}/nglp-analytics'
+    version: master
+    update: yes
+    clone: yes
+    force: no
+    register: code_updated
+
+- name: Create the secrets for NGLP Analytics
+  template:
+    src: analytics/dotenv
+    dest: '{{ deploy_path }}/nglp-analytics/.env'
+
+- name: Redeploy nglp-analytics if the code has changed - bring it down
+  when: code_updated
+  community.docker.docker_compose:
+    project_src: '{{ deploy_path }}/nglp-analytics'
+    state: absent
+
+- name: Bring nglp-analytics back up
+  when: code_updated
+  community.docker.docker_compose:
+    project_src: '{{ deploy_path }}/nglp-analytics'
+    register: up_output
+
+- ansible.builtin.debug:
+    var: up_output
+
 #
 #- name: Bootstrap Janeway
 #  # Retry this because on the first run we have to wait for the Janeway instance to come up and connect to its database.

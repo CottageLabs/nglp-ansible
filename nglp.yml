@@ -8,6 +8,7 @@
     ssl_path: '/etc/ssl'
     ssl_path_relative_to_docker_compose: '/etc/ssl'
 
+    elasticsearch_frontend_url: 'https://elasticsearch.{{ root_domain }}/'
     kibana_frontend_url: 'https://kibana.{{ root_domain }}/'
     kibana_internal_url: 'http://kibana:5601/'
     keycloak_frontend_url: 'https://keycloak.{{ root_domain }}/auth/'
