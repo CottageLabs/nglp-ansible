@@ -107,72 +107,17 @@ services:
     volumes:
       - keycloak-postgres-data:/var/lib/postgresql/data
 
-#
-#  janeway:
-#    build:
-#      context: https://github.com/NGLPteam/nglp-janeway-docker.git#main
-#    environment:
-#      DATABASE_URL: postgres://janeway:{{ janeway_postgres_password }}@janeway-postgres/janeway
-#    ports:
-#      - 8000:8000
-#    volumes:
-#      - ./janeway/fixtures/:/srv/janeway/fixtures/:Z
-#    networks:
-#      - janeway-postgres
-#
-#  janeway-postgres:
-#    image: postgres
-#    environment:
-#      POSTGRES_DB: janeway
-#      POSTGRES_USER: janeway
-#      POSTGRES_PASSWORD: '{{ janeway_postgres_password }}'
-#    networks:
-#      - janeway-postgres
-#    volumes:
-#      - janeway-postgres-data:/var/lib/postgresql/data
-
-
   autoheal:
     image: willfarrell/autoheal
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
-#  grafana:
-#    image: grafana/grafana
-#    ports:
-#      - 3000:3000
-#    environment:
-#      - TERM=linux
-#      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-worldmap-panel,natel-plotly-panel,https://github.com/chartwerk/grafana-chartwerk-app/archive/0.3.2.zip;corpglory-chartwerk-panel,https://github.com/gipong/grafana-groupedbarchart-panel/archive/master.zip;grafana-groupedbarchart-panel
-#    volumes:
-#      - graf-store:/var/lib/grafana
-#    networks:
-#      - elastic
-#    depends_on:
-#      - elasticsearch
-#
-#  logstash:
-#    image: docker.elastic.co/logstash/logstash:7.12.0
-#    environment:
-#      - NODE_NAME=elasticsearch
-#    ports:
-#      - 9600:9600
-#    networks:
-#      - elastic
-#    depends_on:
-#      - elasticsearch
-#
-
 volumes:
   elasticsearch-data:
     driver: local
   keycloak-postgres-data:
     driver: local
-#  janeway-postgres-data:
-#    driver: local
-#  graf-store:
-#    driver: local
 
 networks:
   elasticsearch:
@@ -181,6 +126,3 @@ networks:
     driver: bridge
   keycloak-postgres:
     driver: bridge
-#  janeway-postgres:
-#    driver: bridge
-

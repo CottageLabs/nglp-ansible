@@ -13,7 +13,6 @@
     kibana_internal_url: 'http://kibana:5601/'
     keycloak_frontend_url: 'https://keycloak.{{ root_domain }}/auth/'
     keycloak_internal_url: 'http://keycloak:8080/auth/'
-    janeway_domain: 'janeway.{{ root_domain }}'
 
   vars_files:
     - vars.yml

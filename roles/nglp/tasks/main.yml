@@ -29,8 +29,6 @@
     - '{{ deploy_path }}/elasticsearch/plugins/opendistro_security/securityconfig'
     - '{{ deploy_path }}/kibana'
     - '{{ deploy_path }}/nglp-analytics'
-#    - '{{ deploy_path }}/janeway'
-#    - '{{ deploy_path }}/janeway/fixtures'
 
 - set_fact:
 #    elasticsearch_admin_password: "{{ lookup('password', deploy_path + '/secrets/elasticsearch-admin-password') }}"
@@ -50,8 +48,6 @@
     - keycloak_postgres_password
     - kibana_oidc_client_secret
     - kibana_elasticsearch_password
-#    - janeway_admin_password
-#    - janeway_postgres_password
 
 - template:
     src: 'templates/{{ item.src|default(item) }}'
@@ -72,8 +68,6 @@
       dest: elasticsearch/log4j2.properties
     - src: common/log4j2.properties
       dest: kibana/log4j2.properties
-    # Janeway
-#    - janeway/fixtures/initial.yaml
 
 - name: Place certificate files in the right places
   copy:
@@ -111,8 +105,6 @@
   - template:
       src: nginx/local.nginx
       dest: '{{ deploy_path }}/nginx/sites.conf'
-
-
 
 - name: Set owner permissions for directories to be make available to Docker containers
   file:
@@ -210,28 +202,3 @@
 
 - ansible.builtin.debug:
     var: up_output
-
-#
-#- name: Bootstrap Janeway
-#  # Retry this because on the first run we have to wait for the Janeway instance to come up and connect to its database.
-#  retries: 1
-#  delay: 10
-#  register: result
-#  until: result.rc == 0
-#  # And now the command
-#  shell:
-#    chdir: '{{ deploy_path }}'
-#    cmd: |
-#      docker-compose exec -T janeway \
-#        python /srv/janeway/src/manage.py migrate
-#
-#      docker-compose exec -T janeway \
-#        python /srv/janeway/src/manage.py loaddata /srv/janeway/fixtures/initial.yaml
-#
-#- name: Set Janeway admin password
-#  expect:
-#    chdir: '{{ deploy_path }}'
-#    command: docker-compose exec janeway python /srv/janeway/src/manage.py changepassword admin@janeway.invalid
-#    responses:
-#      '(?m)^Password.*:': '{{ janeway_admin_password }}'
-#  no_log: true
