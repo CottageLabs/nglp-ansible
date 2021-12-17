@@ -177,11 +177,11 @@
   git:
     repo: https://github.com/NGLPteam/NGLP-Analytics.git
     dest: '{{ deploy_path }}/nglp-analytics'
-    version: master
+    version: '{{ nglp_analytics_tag }}'
     update: yes
     clone: yes
     force: no
-    register: code_updated
+  register: code_updated
 
 - name: Create the secrets for NGLP Analytics
   template:
@@ -198,7 +198,7 @@
   when: code_updated
   community.docker.docker_compose:
     project_src: '{{ deploy_path }}/nglp-analytics'
-    register: up_output
+  register: up_output
 
 - ansible.builtin.debug:
     var: up_output
